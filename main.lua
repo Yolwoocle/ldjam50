@@ -1,16 +1,17 @@
 local Class = require "class"
+
 game = nil 
+is_fullscreen = false
 
 function love.load(arg)
 	love.window.setMode(0, 0, {fullscreen = true, vsync = true})
-	SCREEN_WIDTH = love.graphics.getWidth()
-	SCREEN_HEIGHT = love.graphics.getHeight()
+	SCREEN_WIDTH = 800--love.graphics.getWidth()
+	SCREEN_HEIGHT = 600--love.graphics.getHeight()
 
 	love.window.setTitle("Ludum Dare 50 game")
-	is_fullscreen = true
 	love.window.setMode(WINDOW_WIDTH, WINDOW_HEIGHT, {
 		fullscreen = false,
-		resizable = true
+		resizable = false
 	})
 
 	-- enable key repeat so backspace can be held down to trigger love.keypressed multiple times.
@@ -33,34 +34,18 @@ end
 
 function love.keypressed(key)
 	if key == "f5" then
-		if is_server then
-			if love.keyboard.isDown("lshift") then
-				love.event.quit("restart")
-			end
-		else
+		if love.keyboard.isDown("lshift") then
 			love.event.quit("restart")
 		end
 
 	elseif key == "f4" then
-		if is_server then
-			if love.keyboard.isDown("lshift") then
-				love.event.quit()
-			end
-		else
+		if love.keyboard.isDown("lshift") then
 			love.event.quit()
 		end
-
+	
 	elseif key == "f11" then
-		is_fullscreen = not is_fullscreen
+		--is_fullscreen = not is_fullscreen
 		love.window.setFullscreen(is_fullscreen)
-
-	elseif key == "f12" then
-		-- Restart as server mode
-		is_server = true
-		chat:clear()
-		love.load("-server")
-		
-	end
 
 	if game.keypressed then  game:keypressed(key)  end
 end
@@ -80,11 +65,5 @@ function love.resize(w, h)
 end
 
 function love.textinput(text)
-	game:textinput(text)
-end
-
-oldprint = print
-function print(...)
-	oldprint(...)
-	local success, errormsg = love.filesystem.append("log.txt", concat(...).."\n")
+	if game.textinput then  game:textinput(text)  end
 end
